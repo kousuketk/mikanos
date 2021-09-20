@@ -1,4 +1,4 @@
-!/bin/sh -ex
+#!/bin/sh -ex
 
 if [ $# -lt 1 ]
 then
