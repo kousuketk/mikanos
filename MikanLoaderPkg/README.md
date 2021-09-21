@@ -2,6 +2,7 @@
 ```
 - kernel.elfを作る
 $ cd kernel
+$ source $HOME/osbook/devenv/buildenv.sh
 $ make
 - buildして実行
 $ cd ~/edk2
