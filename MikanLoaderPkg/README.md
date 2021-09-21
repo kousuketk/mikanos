@@ -7,5 +7,4 @@ $ ld.lld --entry KernelMain -z norelro --image-base 0x100000 --static -o kernel.
 - buildして実行
 $ source edksetup.sh
 $ build
-$ ~/osbook/devenv/run_qemu.sh ~/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi
-```
+$ ~/osbook/devenv/run_qemu.sh ~/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi /workspaces/mikanos/kernel/kernel.elf
