@@ -6,14 +6,17 @@
 $ cd kernel
 $ source $HOME/osbook/devenv/buildenv.sh
 - edk2
+$ cd ~/edk2
 $ ln -s /workspaces/mikanos/MikanLoaderPkg ./
+$ source edksetup.sh
 - Conf/target.txtを編集
 ACTIVE_PLATFORM:MikanLoaderPkg/MikanLoaderPkg.dsc
 TARGET:DEBUG
 TARGET_ARCH:X64
 TOOL_CHAIN_TAG:CLANG38
-$ source edksetup.sh
 $ build
+- XQuartz
+$ xhost + 127.0.0.1
 ```
 
 ### run
