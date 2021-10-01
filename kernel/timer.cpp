@@ -55,7 +55,6 @@ void TimerManager::AddTimer(const Timer& timer) {
   timers_.push(timer);
 }
 
-// #@@range_begin(tick)
 bool TimerManager::Tick() {
   ++tick_;
 
@@ -92,6 +91,6 @@ void LAPICTimerOnInterrupt() {
   NotifyEndOfInterrupt();
 
   if (task_timer_timeout) {
-    SwitchTask();
+    task_manager->SwitchTask();
   }
 }
