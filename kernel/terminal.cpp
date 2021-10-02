@@ -19,10 +19,8 @@ Terminal::Terminal() {
     .SetDraggable(true)
     .ID();
 
-  // #@@range_begin(resize_history)
   Print(">");
   cmd_history_.resize(8);
-  // #@@range_end(resize_history)
 }
 
 Rectangle<int> Terminal::BlinkCursor() {
@@ -48,7 +46,6 @@ Rectangle<int> Terminal::InputKey(
 
   Rectangle<int> draw_area{CalcCursorPos(), {8*2, 16}};
 
-  // #@@range_begin(handle_enter)
   if (ascii == '\n') {
     linebuf_[linebuf_index_] = 0;
     if (linebuf_index_ > 0) {
@@ -57,7 +54,6 @@ Rectangle<int> Terminal::InputKey(
     }
     linebuf_index_ = 0;
     cmd_history_index_ = -1;
-  // #@@range_end(handle_enter)
 
     cursor_.x = 0;
     if (cursor_.y < kRows - 1) {
