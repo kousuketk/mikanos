@@ -193,7 +193,6 @@ void CopyLoadSegments(Elf64_Ehdr* ehdr) {
   }
 }
 
-// #@@range_begin(read_file)
 EFI_STATUS ReadFile(EFI_FILE_PROTOCOL* file, VOID** buffer) {
   EFI_STATUS status;
 
@@ -216,9 +215,7 @@ EFI_STATUS ReadFile(EFI_FILE_PROTOCOL* file, VOID** buffer) {
 
   return file->Read(file, &file_size, *buffer);
 }
-// #@@range_end(read_file)
 
-// #@@range_begin(open_blockio)
 EFI_STATUS OpenBlockIoProtocolForLoadedImage(
     EFI_HANDLE image_handle, EFI_BLOCK_IO_PROTOCOL** block_io) {
   EFI_STATUS status;
@@ -245,9 +242,7 @@ EFI_STATUS OpenBlockIoProtocolForLoadedImage(
 
   return status;
 }
-// #@@range_end(open_blockio)
 
-// #@@range_begin(read_blocks)
 EFI_STATUS ReadBlocks(
       EFI_BLOCK_IO_PROTOCOL* block_io, UINT32 media_id,
       UINTN read_bytes, VOID** buffer) {
@@ -267,7 +262,6 @@ EFI_STATUS ReadBlocks(
 
   return status;
 }
-// #@@range_end(read_blocks)
 
 EFI_STATUS EFIAPI UefiMain(
     EFI_HANDLE image_handle,
