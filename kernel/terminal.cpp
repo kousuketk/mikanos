@@ -447,7 +447,6 @@ Error Terminal::ExecuteFile(const fat::DirectoryEntry& file_entry, char* command
     return err;
   }
 
-  // #@@range_begin(start_app)
   __asm__("cli");
   auto& task = task_manager->CurrentTask();
   __asm__("sti");
@@ -460,7 +459,6 @@ Error Terminal::ExecuteFile(const fat::DirectoryEntry& file_entry, char* command
   char s[64];
   sprintf(s, "app exited. ret = %d\n", ret);
   Print(s);
-  // #@@range_end(start_app)
 
   const auto addr_first = GetFirstLoadAddress(elf_header);
   if (auto err = CleanPageMaps(LinearAddress4Level{addr_first})) {
@@ -584,10 +582,12 @@ void TaskTerminal(uint64_t task_id, int64_t data) {
       }
       break;
     case Message::kKeyPush:
-      {
+      // #@@range_begin(if_press)
+      if (msg->arg.keyboard.press) {
         const auto area = terminal->InputKey(msg->arg.keyboard.modifier,
                                              msg->arg.keyboard.keycode,
                                              msg->arg.keyboard.ascii);
+      // #@@range_end(if_press)
         Message msg = MakeLayerMessage(
             task_id, terminal->LayerID(), LayerOperation::DrawArea, area);
         __asm__("cli");
