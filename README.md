@@ -21,13 +21,6 @@ $ xhost + 127.0.0.1
 
 ### run
 ```
-- kernel
-$ cd kernel
-$ make
-- edk2
-$ cd ~/edk2
-$ ~/osbook/devenv/run_qemu.sh ~/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi /workspaces/mikanos/kernel/kernel.elf
-↓
 $ ./build.sh run
 ```
 
