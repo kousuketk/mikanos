@@ -528,9 +528,12 @@ Error Terminal::ExecuteFile(const fat::DirectoryEntry& file_entry, char* command
     return err;
   }
 
-  // #@@range_begin(add_stdin_fd)
-  task.Files().push_back(
-      std::make_unique<TerminalFileDescriptor>(task, *this));
+  // #@@range_begin(register_stdfds)
+  for (int i = 0; i < 3; ++i) {
+    task.Files().push_back(
+        std::make_unique<TerminalFileDescriptor>(task, *this));
+  }
+  // #@@range_end(register_stdfds)
 
   auto entry_addr = elf_header->e_entry;
   int ret = CallApp(argc.value, argv, 3 << 3 | 3, entry_addr,
@@ -538,7 +541,6 @@ Error Terminal::ExecuteFile(const fat::DirectoryEntry& file_entry, char* command
                     &task.OSStackPointer());
 
   task.Files().clear();
-  // #@@range_end(add_stdin_fd)
 
   char s[64];
   sprintf(s, "app exited. ret = %d\n", ret);
@@ -633,8 +635,6 @@ Rectangle<int> Terminal::HistoryUpDown(int direction) {
   return draw_area;
 }
 
-std::map<uint64_t, Terminal*>* terminals;
-
 void TaskTerminal(uint64_t task_id, int64_t data) {
   const char* command_line = reinterpret_cast<char*>(data);
   const bool show_window = command_line == nullptr;
@@ -647,7 +647,6 @@ void TaskTerminal(uint64_t task_id, int64_t data) {
     layer_task_map->insert(std::make_pair(terminal->LayerID(), task_id));
     active_layer->Activate(terminal->LayerID());
   }
-  (*terminals)[task_id] = terminal;
   __asm__("sti");
 
   if (command_line) {
@@ -710,13 +709,10 @@ void TaskTerminal(uint64_t task_id, int64_t data) {
   }
 }
 
-// #@@range_begin(term_fd_ctor)
 TerminalFileDescriptor::TerminalFileDescriptor(Task& task, Terminal& term)
     : task_{task}, term_{term} {
 }
-// #@@range_end(term_fd_ctor)
 
-// #@@range_begin(term_fd_read)
 size_t TerminalFileDescriptor::Read(void* buf, size_t len) {
   char* bufc = reinterpret_cast<char*>(buf);
 
@@ -747,4 +743,10 @@ size_t TerminalFileDescriptor::Read(void* buf, size_t len) {
     return 1;
   }
 }
-// #@@range_end(term_fd_read)
+
+// #@@range_begin(term_fd_write)
+size_t TerminalFileDescriptor::Write(const void* buf, size_t len) {
+  term_.Print(reinterpret_cast<const char*>(buf), len);
+  return len;
+}
+// #@@range_end(term_fd_write)
