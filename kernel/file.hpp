@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cstddef>
 #include "error.hpp"
 
-// #@@range_begin(file_fd)
 class FileDescriptor {
  public:
   virtual ~FileDescriptor() = default;
@@ -14,4 +14,5 @@ class FileDescriptor {
    */
   virtual size_t Load(void* buf, size_t len, size_t offset) = 0;
 };
-// #@@range_end(file_fd)
+
+size_t PrintToFD(FileDescriptor& fd, const char* format, ...);
