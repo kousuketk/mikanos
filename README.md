@@ -21,7 +21,7 @@ $ xhost + 127.0.0.1
 
 ### run
 ```
-$ APPS_DIR=apps ./build.sh run
+$ APPS_DIR=apps RESOURCE_DIR=resource ./build.sh run
 ```
 
 ### Note
