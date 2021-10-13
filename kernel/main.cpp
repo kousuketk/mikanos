@@ -138,6 +138,7 @@ extern "C" void KernelMainNewStack(
   InitializeInterrupt();
 
   fat::Initialize(volume_image);
+  InitializeFont();
   InitializePCI();
 
   InitializeLayer();
@@ -162,6 +163,7 @@ extern "C" void KernelMainNewStack(
   InitializeKeyboard();
   InitializeMouse();
 
+  app_loads = new std::map<fat::DirectoryEntry*, AppLoadInfo>;
   task_manager->NewTask()
     .InitContext(TaskTerminal, 0)
     .Wakeup();
