@@ -359,14 +359,12 @@ void Terminal::ExecuteLine() {
   char* first_arg = strchr(&linebuf_[0], ' ');
   char* redir_char = strchr(&linebuf_[0], '>');
   char* pipe_char = strchr(&linebuf_[0], '|');
-  // #@@range_begin(first_arg)
   if (first_arg) {
     *first_arg = 0;
     do {
       ++first_arg;
     } while (isspace(*first_arg));
   }
-  // #@@range_end(first_arg)
 
   auto original_stdout = files_[1];
   int exit_code = 0;
@@ -719,7 +717,6 @@ void TaskTerminal(uint64_t task_id, int64_t data) {
     delete term_desc;
     __asm__("cli");
     task_manager->Finish(terminal->LastExitCode());
-    __asm__("sti");
   }
 
   auto add_blink_timer = [task_id](unsigned long t){
@@ -769,6 +766,13 @@ void TaskTerminal(uint64_t task_id, int64_t data) {
     case Message::kWindowActive:
       window_isactive = msg->arg.window_active.activate;
       break;
+    // #@@range_begin(term_closewin)
+    case Message::kWindowClose:
+      CloseLayer(msg->arg.window_close.layer_id);
+      __asm__("cli");
+      task_manager->Finish(terminal->LastExitCode());
+      break;
+    // #@@range_end(term_closewin)
     default:
       break;
     }

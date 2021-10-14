@@ -3,7 +3,6 @@
 #include "logger.hpp"
 #include "font.hpp"
 
-// #@@range_begin(draw_tbox)
 namespace {
   void DrawTextbox(PixelWriter& writer, Vector2D<int> pos, Vector2D<int> size,
                    const PixelColor& background,
@@ -16,7 +15,6 @@ namespace {
 
     // fill main box
     fill_rect(pos + Vector2D<int>{1, 1}, size - Vector2D<int>{2, 2}, background);
-// #@@range_end(draw_tbox)
 
     // draw border lines
     fill_rect(pos,                            {size.x, 1}, border_dark);
@@ -24,6 +22,25 @@ namespace {
     fill_rect(pos + Vector2D<int>{0, size.y}, {size.x, 1}, border_light);
     fill_rect(pos + Vector2D<int>{size.x, 0}, {1, size.y}, border_light);
   }
+
+  const int kCloseButtonWidth = 16;
+  const int kCloseButtonHeight = 14;
+  const char close_button[kCloseButtonHeight][kCloseButtonWidth + 1] = {
+    "...............@",
+    ".:::::::::::::$@",
+    ".:::::::::::::$@",
+    ".:::@@::::@@::$@",
+    ".::::@@::@@:::$@",
+    ".:::::@@@@::::$@",
+    ".::::::@@:::::$@",
+    ".:::::@@@@::::$@",
+    ".::::@@::@@:::$@",
+    ".:::@@::::@@::$@",
+    ".:::::::::::::$@",
+    ".:::::::::::::$@",
+    ".$$$$$$$$$$$$$$@",
+    "@@@@@@@@@@@@@@@@",
+  };
 }
 
 Window::Window(int width, int height, PixelFormat shadow_format) : width_{width}, height_{height} {
@@ -101,6 +118,12 @@ void Window::Move(Vector2D<int> dst_pos, const Rectangle<int>& src) {
   shadow_buffer_.Move(dst_pos, src);
 }
 
+// #@@range_begin(win_getwinregion)
+WindowRegion Window::GetWindowRegion(Vector2D<int> pos) {
+  return WindowRegion::kOther;
+}
+// #@@range_end(win_getwinregion)
+
 ToplevelWindow::ToplevelWindow(int width, int height, PixelFormat shadow_format,
                                const std::string& title)
     : Window{width, height, shadow_format}, title_{title} {
@@ -117,29 +140,24 @@ void ToplevelWindow::Deactivate() {
   DrawWindowTitle(*Writer(), title_.c_str(), false);
 }
 
+// #@@range_begin(toplevelwin_getwinregion)
+WindowRegion ToplevelWindow::GetWindowRegion(Vector2D<int> pos) {
+  if (pos.x < 2 || Width() - 2 <= pos.x ||
+      pos.y < 2 || Height() - 2 <= pos.y) {
+    return WindowRegion::kBorder;
+  } else if (pos.y < kTopLeftMargin.y) {
+    if (Width() - 5 - kCloseButtonWidth <= pos.x && pos.x < Width() - 5 &&
+        5 <= pos.y && pos.y < 5 + kCloseButtonHeight) {
+      return WindowRegion::kCloseButton;
+    }
+    return WindowRegion::kTitleBar;
+  }
+  return WindowRegion::kOther;
+}
+// #@@range_end(toplevelwin_getwinregion)
+
 Vector2D<int> ToplevelWindow::InnerSize() const {
   return Size() - kTopLeftMargin - kBottomRightMargin;
-}
-
-namespace {
-  const int kCloseButtonWidth = 16;
-  const int kCloseButtonHeight = 14;
-  const char close_button[kCloseButtonHeight][kCloseButtonWidth + 1] = {
-    "...............@",
-    ".:::::::::::::$@",
-    ".:::::::::::::$@",
-    ".:::@@::::@@::$@",
-    ".::::@@::@@:::$@",
-    ".:::::@@@@::::$@",
-    ".::::::@@:::::$@",
-    ".:::::@@@@::::$@",
-    ".::::@@::@@:::$@",
-    ".:::@@::::@@::$@",
-    ".:::::::::::::$@",
-    ".:::::::::::::$@",
-    ".$$$$$$$$$$$$$$@",
-    "@@@@@@@@@@@@@@@@",
-  };
 }
 
 void DrawWindow(PixelWriter& writer, const char* title) {
@@ -162,7 +180,6 @@ void DrawWindow(PixelWriter& writer, const char* title) {
   DrawWindowTitle(writer, title, false);
 }
 
-// #@@range_begin(draw_term)
 void DrawTextbox(PixelWriter& writer, Vector2D<int> pos, Vector2D<int> size) {
   DrawTextbox(writer, pos, size,
               ToColor(0xffffff), ToColor(0xc6c6c6), ToColor(0x848484));
@@ -172,7 +189,6 @@ void DrawTerminal(PixelWriter& writer, Vector2D<int> pos, Vector2D<int> size) {
   DrawTextbox(writer, pos, size,
               ToColor(0x000000), ToColor(0xc6c6c6), ToColor(0x848484));
 }
-// #@@range_end(draw_term)
 
 void DrawWindowTitle(PixelWriter& writer, const char* title, bool active) {
   const auto win_w = writer.Width();

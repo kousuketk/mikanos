@@ -15,6 +15,7 @@ struct Message {
     kMouseButton,
     kWindowActive,
     kPipe,
+    kWindowClose,
   } type;
 
   uint64_t src_task;
@@ -55,11 +56,15 @@ struct Message {
       int activate; // 1: activate, 0: deactivate
     } window_active;
 
-    // #@@range_begin(msg_pipe)
     struct {
       char data[16];
       uint8_t len;
     } pipe;
-    // #@@range_end(msg_pipe)
+
+    // #@@range_begin(msg_winclose)
+    struct {
+      unsigned int layer_id;
+    } window_close;
+    // #@@range_end(msg_winclose)
   } arg;
 };
